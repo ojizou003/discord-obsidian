@@ -41,6 +41,10 @@ client.once('ready', async () => {
 // Git リポジトリ初期化関数
 async function initializeGitRepo() {
     try {
+        // Gitユーザー情報を設定
+        await git.addConfig('user.name', process.env.GIT_USER_NAME || 'ObsidianMemoBot');
+        await git.addConfig('user.email', process.env.GIT_USER_EMAIL || 'bot@example.com');
+
         if (!await fs.pathExists(REPO_PATH)) {
             console.log('📥 Cloning Obsidian vault repository...');
             const authenticatedUrl = OBSIDIAN_REPO_URL.replace(

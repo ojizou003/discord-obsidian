@@ -3,6 +3,7 @@ const { Client, GatewayIntentBits } = require('discord.js');
 const fs = require('fs-extra');
 const path = require('path');
 const { format } = require('date-fns');
+const { utcToZonedTime } = require('date-fns-tz');
 const simpleGit = require('simple-git');
 
 // Discord Client 初期化
@@ -135,8 +136,10 @@ async function saveToObsidian(message) {
     const inboxFolder = path.join(REPO_PATH, '00_inbox');
     await fs.ensureDir(inboxFolder);
     
-    // ファイル名生成
-    const timestamp = format(new Date(), 'yyyyMMdd_HHmmss');
+    // JSTでタイムスタンプ生成
+    const now = new Date();
+    const jstDate = utcToZonedTime(now, 'Asia/Tokyo');
+    const timestamp = format(jstDate, 'yyyyMMdd_HHmmss');
     const filename = `${timestamp}_discord.md`;
     const filepath = path.join(inboxFolder, filename);
     
@@ -153,8 +156,10 @@ async function saveToObsidian(message) {
 
 // Markdownコンテンツ生成関数
 function generateMarkdownContent(message) {
-    const timestamp = format(message.createdAt, 'yyyy/MM/dd HH:mm:ss');
-    
+    // JSTでタイムスタンプ生成
+    const jstDate = utcToZonedTime(message.createdAt, 'Asia/Tokyo');
+    const timestamp = format(jstDate, 'yyyy/MM/dd HH:mm:ss');
+
     return `# Discord メモ - ${timestamp}
 
 **送信者**: ${message.author.username}

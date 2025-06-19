@@ -51,6 +51,7 @@ async function initializeGitRepo() {
                 'https://github.com/',
                 `https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/`
             );
+            console.log('Authenticated URL:', authenticatedUrl);
             await simpleGit().clone(authenticatedUrl, REPO_PATH);
             console.log('✅ Obsidian vault repository cloned successfully');
         } else {

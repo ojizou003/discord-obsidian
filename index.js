@@ -38,47 +38,91 @@ client.once('ready', async () => {
     await initializeGitRepo();
 });
 
-// Git リポジトリ初期化関数
+// Git リポジトリ初期化関数（修正版）
 async function initializeGitRepo() {
     try {
-        // Gitユーザー情報を設定
-        await git.addConfig('user.name', process.env.GIT_USER_NAME || 'ObsidianMemoBot');
-        await git.addConfig('user.email', process.env.GIT_USER_EMAIL || 'bot@example.com');
+        // 認証付きURLを生成
+        const authenticatedUrl = OBSIDIAN_REPO_URL.replace(
+            'https://github.com/',
+            `https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/`
+        );
 
         if (!await fs.pathExists(REPO_PATH)) {
             console.log('📥 Cloning Obsidian vault repository...');
-            const authenticatedUrl = OBSIDIAN_REPO_URL.replace(
-                'https://github.com/',
-                `https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/`
-            );
-            console.log('Authenticated URL:', authenticatedUrl);
+            console.log('Repository URL:', OBSIDIAN_REPO_URL); // 元のURLをログ出力
+            
             await simpleGit().clone(authenticatedUrl, REPO_PATH);
             console.log('✅ Obsidian vault repository cloned successfully');
+            
+            // クローン後にGitユーザー情報を設定
+            await git.addConfig('user.name', process.env.GIT_USER_NAME || 'ObsidianMemoBot');
+            await git.addConfig('user.email', process.env.GIT_USER_EMAIL || 'bot@example.com');
+            
         } else {
-            console.log('📂 Obsidian vault repository exists, pulling latest changes...');
-            // ここで未コミットの変更があれば自動コミット
+            console.log('📂 Obsidian vault repository exists, configuring git...');
+            
+            // Gitユーザー情報を設定
+            await git.addConfig('user.name', process.env.GIT_USER_NAME || 'ObsidianMemoBot');
+            await git.addConfig('user.email', process.env.GIT_USER_EMAIL || 'bot@example.com');
+            
+            // リモートURLを認証付きに更新
+            try {
+                await git.removeRemote('origin');
+            } catch (e) {
+                console.log('Remote origin does not exist, skipping removal');
+            }
+            await git.addRemote('origin', authenticatedUrl);
+            console.log('🔧 Updated remote origin with authentication');
+            
+            // 未コミットの変更があれば自動コミット
             const status = await git.status();
             if (status.files.length > 0) {
                 await git.add('.');
                 await git.commit('Auto-commit: save local changes before pull');
                 console.log('💾 Auto-committed local changes before pull');
             }
+            
+            // pull実行
             await git.pull('origin', 'main', {'--rebase': 'true'});
             console.log('✅ Obsidian vault repository updated');
         }
+        
         await fs.ensureDir(path.join(REPO_PATH, '00_inbox'));
+        
     } catch (error) {
         console.error('❌ Git initialization error:', error);
+        
+        // エラーが発生してもBotは継続動作させる
+        console.log('⚠️  Git sync failed, but bot will continue working locally');
+        await fs.ensureDir(path.join(REPO_PATH, '00_inbox'));
     }
 }
 
-// Git push 関数
+// Git push 関数（修正版）
 async function pushToGitHub(filename) {
     try {
         console.log('🔄 Pushing to GitHub...');
 
+        // リモートURLが認証付きかどうか確認・設定
+        const remotes = await git.getRemotes(true);
+        const origin = remotes.find(remote => remote.name === 'origin');
+        
+        if (origin && !origin.refs.push.includes(GITHUB_TOKEN)) {
+            console.log('🔧 Updating remote URL with authentication...');
+            const authenticatedUrl = OBSIDIAN_REPO_URL.replace(
+                'https://github.com/',
+                `https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/`
+            );
+            await git.removeRemote('origin');
+            await git.addRemote('origin', authenticatedUrl);
+        }
+
         // push前にpull（rebase）してローカルを最新に
-        await git.pull('origin', 'main', {'--rebase': 'true'});
+        try {
+            await git.pull('origin', 'main', {'--rebase': 'true'});
+        } catch (pullError) {
+            console.log('⚠️  Pull failed, continuing with push...');
+        }
 
         // ファイルをステージング
         await git.add(path.join('00_inbox', filename));
@@ -94,7 +138,10 @@ async function pushToGitHub(filename) {
 
     } catch (error) {
         console.error('❌ Git push error:', error);
-        throw error;
+        console.log('📄 File saved locally but not pushed to GitHub');
+        
+        // エラーをthrowしない（ローカル保存は成功しているため）
+        // throw error;
     }
 }
 

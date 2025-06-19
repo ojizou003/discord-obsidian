@@ -16,13 +16,10 @@ const client = new Client({
 
 // 設定
 const TARGET_CHANNEL_ID = process.env.CHANNEL_ID;
-// const OBSIDIAN_FOLDER = './obsidian/00_inbox';
-const OBSIDIAN_FOLDER = './obsidian/00_inbox';
+const OBSIDIAN_REPO_URL = process.env.OBSIDIAN_REPO_URL;  // Obsidian Vault用リポジトリ
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-const GITHUB_REPO_URL = process.env.GITHUB_REPO_URL;
 const GITHUB_USERNAME = process.env.GITHUB_USERNAME;
-// const REPO_PATH = './obsidian';
-const REPO_PATH = './obsidian';
+const REPO_PATH = './obsidian';  // クローンしたObsidian Vaultの場所
 
 // Git インスタンス作成
 const git = simpleGit(REPO_PATH);
@@ -31,6 +28,11 @@ const git = simpleGit(REPO_PATH);
 client.once('ready', async () => {
     console.log(`✅ Bot is ready! Logged in as ${client.user.tag}`);
     console.log(`📋 Monitoring channel ID: ${TARGET_CHANNEL_ID}`);
+    console.log(`🔧 Environment check:`);
+    console.log(`- DISCORD_TOKEN: ${process.env.DISCORD_TOKEN ? 'SET' : 'NOT SET'}`);
+    console.log(`- GITHUB_TOKEN: ${process.env.GITHUB_TOKEN ? 'SET' : 'NOT SET'}`);
+    console.log(`- CHANNEL_ID: ${process.env.CHANNEL_ID || 'NOT SET'}`);
+    console.log(`- OBSIDIAN_REPO_URL: ${process.env.OBSIDIAN_REPO_URL || 'NOT SET'}`);
     
     // Git リポジトリ初期化
     await initializeGitRepo();
@@ -40,15 +42,15 @@ client.once('ready', async () => {
 async function initializeGitRepo() {
     try {
         if (!await fs.pathExists(REPO_PATH)) {
-            console.log('📥 Cloning repository...');
-            const authenticatedUrl = GITHUB_REPO_URL.replace(
+            console.log('📥 Cloning Obsidian vault repository...');
+            const authenticatedUrl = OBSIDIAN_REPO_URL.replace(
                 'https://github.com/',
                 `https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/`
             );
             await simpleGit().clone(authenticatedUrl, REPO_PATH);
-            console.log('✅ Repository cloned successfully');
+            console.log('✅ Obsidian vault repository cloned successfully');
         } else {
-            console.log('📂 Repository folder exists, pulling latest changes...');
+            console.log('📂 Obsidian vault repository exists, pulling latest changes...');
             // ここで未コミットの変更があれば自動コミット
             const status = await git.status();
             if (status.files.length > 0) {
@@ -57,7 +59,7 @@ async function initializeGitRepo() {
                 console.log('💾 Auto-committed local changes before pull');
             }
             await git.pull('origin', 'main', {'--rebase': 'true'});
-            console.log('✅ Repository updated');
+            console.log('✅ Obsidian vault repository updated');
         }
         await fs.ensureDir(path.join(REPO_PATH, '00_inbox'));
     } catch (error) {

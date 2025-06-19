@@ -1,0 +1,12 @@
+node_modules/
+.env
+
+.obsidian/
+.DS_Store
+Thumbs.db
+*.tmp
+definition.md
+Git連携機能実装ガイド.md
+memo.md
+デプロイガイド.md
+ローカル実装ガイド.md

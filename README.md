@@ -1,0 +1,1 @@
+ojizou003のobsidianのリポジトリ

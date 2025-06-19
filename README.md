@@ -1,1 +1,1 @@
-ojizou003のobsidianのリポジトリ
+discode-obsidian-botのリポジトリ

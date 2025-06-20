@@ -18,6 +18,5 @@
     "dotenv": "^16.5.0",
     "fs-extra": "^11.3.0",
     "simple-git": "^3.28.0"
-  },
-  "type": "module"
+  }
 }

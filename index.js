@@ -3,9 +3,15 @@ const { Client, GatewayIntentBits } = require('discord.js');
 const fs = require('fs-extra');
 const path = require('path');
 const { format } = require('date-fns');
-const dateFnsTz = require('date-fns-tz');
-const utcToZonedTime = dateFnsTz.utcToZonedTime;
+
+// 修正ポイント：date-fns-tz の読み込み
+// const dateFnsTz = require('date-fns-tz');
+// const utcToZonedTime = dateFnsTz.utcToZonedTime;
+// または ↓ 安定しない場合はこちらでも可
+const { utcToZonedTime } = require('date-fns-tz');
+
 const simpleGit = require('simple-git');
+
 
 // Discord Client 初期化
 const client = new Client({
@@ -30,6 +36,7 @@ const git = simpleGit(REPO_PATH);
 client.once('ready', async () => {
     console.log(`✅ Bot is ready! Logged in as ${client.user.tag}`);
     console.log(`📋 Monitoring channel ID: ${TARGET_CHANNEL_ID}`);
+    console.log('[DEBUG] date-fns-tz:', require('date-fns-tz'));
     console.log(`🔧 Environment check:`);
     console.log(`- DISCORD_TOKEN: ${process.env.DISCORD_TOKEN ? 'SET' : 'NOT SET'}`);
     console.log(`- GITHUB_TOKEN: ${process.env.GITHUB_TOKEN ? 'SET' : 'NOT SET'}`);

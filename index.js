@@ -5,6 +5,7 @@ const path = require('path');
 const { format } = require('date-fns');
 
 const { toZonedTime } = require('date-fns-tz');
+const http = require('http'); // HTTPモジュールをインポート
 
 const simpleGit = require('simple-git');
 
@@ -192,3 +193,15 @@ process.on('unhandledRejection', (error) => {
 
 // Bot起動
 client.login(process.env.DISCORD_TOKEN);
+
+// Renderの無料インスタンスがスピンダウンするのを防ぐためのHTTPサーバー
+const PORT = process.env.PORT || 10000; // RenderはPORT環境変数を設定します
+const server = http.createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
+  res.end('Discord bot is active and running.\n');
+});
+
+server.listen(PORT, () => {
+  console.log(`🌐 HTTP server listening on port ${PORT}. This is to keep the Render service alive.`);
+  console.log(`🚀 You can set up an uptime monitor to ping http://<your-render-app-url>:${PORT}/`);
+});

@@ -89,11 +89,14 @@ async function pushToGitHub(filename) {
         const commitMessage = `Add memo: ${filename}`;
         await git.commit(commitMessage);
 
-        // プッシュ（rebaseなし）
+        // リモートの変更を取り込んでからプッシュ（コンフリクト回避のためrebaseを試みる）
+        console.log('🔄 Pulling remote changes with rebase...');
+        await git.pull('origin', 'main', {'--rebase': 'true'});
+
+        console.log('🔄 Pushing to GitHub again after pull...');
         await git.push('origin', 'main');
 
         console.log('✅ Successfully pushed to GitHub');
-
     } catch (error) {
         console.error('❌ Git push error:', error);
         console.log('📄 File saved locally but not pushed to GitHub');

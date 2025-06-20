@@ -195,7 +195,7 @@ process.on('unhandledRejection', (error) => {
 client.login(process.env.DISCORD_TOKEN);
 
 // Renderの無料インスタンスがスピンダウンするのを防ぐためのHTTPサーバー
-const PORT = process.env.PORT || 10000; // RenderはPORT環境変数を設定します
+const PORT = process.env.PORT || 4000; // RenderはPORT環境変数を設定します
 const server = http.createServer((req, res) => {
   res.writeHead(200, { 'Content-Type': 'text/plain' });
   res.end('Discord bot is active and running.\n');

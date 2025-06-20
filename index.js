@@ -4,11 +4,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const { format } = require('date-fns');
 
-// 修正ポイント：date-fns-tz の読み込み
-// const dateFnsTz = require('date-fns-tz');
-// const utcToZonedTime = dateFnsTz.utcToZonedTime;
-// または ↓ 安定しない場合はこちらでも可
-const { utcToZonedTime } = require('date-fns-tz');
+const { toZonedTime } = require('date-fns-tz');
 
 const simpleGit = require('simple-git');
 
@@ -146,7 +142,7 @@ async function saveToObsidian(message) {
     
     // JSTでタイムスタンプ生成
     const now = new Date();
-    const jstDate = utcToZonedTime(now, 'Asia/Tokyo');
+    const jstDate = toZonedTime(now, 'Asia/Tokyo');
     const timestamp = format(jstDate, 'yyyyMMdd_HHmmss');
     const filename = `${timestamp}_discord.md`;
     const filepath = path.join(inboxFolder, filename);

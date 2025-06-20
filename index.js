@@ -4,7 +4,8 @@ import { Client, GatewayIntentBits } from 'discord.js';
 import fs from 'fs-extra';
 import path from 'path';
 import { format } from 'date-fns';
-import { utcToZonedTime } from 'date-fns-tz';
+import dateFnsTz from 'date-fns-tz';
+const { utcToZonedTime } = dateFnsTz;
 import simpleGit from 'simple-git';
 
 // Discord Client 初期化

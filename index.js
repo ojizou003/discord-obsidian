@@ -160,7 +160,7 @@ async function saveToObsidian(message) {
 // Markdownコンテンツ生成関数
 function generateMarkdownContent(message) {
     // JSTでタイムスタンプ生成
-    const jstDate = ToZonedTime(message.createdAt, 'Asia/Tokyo');
+    const jstDate = toZonedTime(message.createdAt, 'Asia/Tokyo');
     const timestamp = format(jstDate, 'yyyy/MM/dd HH:mm:ss');
 
     return `# Discord メモ - ${timestamp}

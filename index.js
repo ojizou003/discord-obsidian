@@ -164,20 +164,22 @@ async function saveToObsidian(message) {
 
 // Markdownコンテンツ生成関数
 function generateMarkdownContent(message) {
-    // JSTでタイムスタンプ生成
     const jstDate = toZonedTime(message.createdAt, 'Asia/Tokyo');
-    const timestamp = format(jstDate, 'yyyy/MM/dd HH:mm:ss');
+    const displayTimestamp = format(jstDate, 'yyyy/MM/dd HH:mm:ss');
+    // const fileTimestamp = format(jstDate, 'yyyyMMdd'); // ファイル名用とは別にタイトル用タイムスタンプ
 
-    return `**送信者**: ${message.author.username}
-            **チャンネル**: ${message.channel.name}
-            **投稿時刻**: ${timestamp}
+    return `# Discordメモ  
+**送信者**: ${message.author.username}
+**チャンネル**: ${message.channel.name}
+**投稿時刻**: ${displayTimestamp}
 
-            ${message.content}
+${message.content}
 
-            ---
-            #discord #memo
-            `;
+---
+#discord #memo
+`;
 }
+
 
 // エラーハンドリング
 client.on('error', (error) => {

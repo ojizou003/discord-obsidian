@@ -168,17 +168,15 @@ function generateMarkdownContent(message) {
     const jstDate = toZonedTime(message.createdAt, 'Asia/Tokyo');
     const timestamp = format(jstDate, 'yyyy/MM/dd HH:mm:ss');
 
-    return `# Discord メモ - ${timestamp}
+    return `**送信者**: ${message.author.username}
+            **チャンネル**: ${message.channel.name}
+            **投稿時刻**: ${timestamp}
 
-**送信者**: ${message.author.username}
-**チャンネル**: ${message.channel.name}
-**投稿時刻**: ${timestamp}
+            ${message.content}
 
-${message.content}
-
----
-#discord #memo
-`;
+            ---
+            #discord #memo
+            `;
 }
 
 // エラーハンドリング

@@ -128,7 +128,9 @@ client.on('messageCreate', async (message) => {
             await message.react('🔄'); // Git関連エラー
             console.log('🔄 Git error - file saved locally but not pushed');
         } else {
-            await message.react('❌'); // その他のエラー
+            // その他のエラーの場合、ログには出力されるがDiscord上ではリアクションしない
+            // (意図的に何もしない)
+            console.log('ℹ️ A non-Git error occurred. The error was logged, but no reaction was sent to Discord.');
         }
     }
 });

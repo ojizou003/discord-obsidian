@@ -1,11 +1,11 @@
-require('dotenv').config();
-const { Client, GatewayIntentBits } = require('discord.js');
-const fs = require('fs-extra');
-const path = require('path');
-const { format } = require('date-fns');
-const dateFnsTz = require('date-fns-tz');
-const utcToZonedTime = dateFnsTz.utcToZonedTime || (dateFnsTz.default && dateFnsTz.default.utcToZonedTime);
-const simpleGit = require('simple-git');
+import dotenv from 'dotenv';
+dotenv.config();
+import { Client, GatewayIntentBits } from 'discord.js';
+import fs from 'fs-extra';
+import path from 'path';
+import { format } from 'date-fns';
+import { utcToZonedTime } from 'date-fns-tz';
+import simpleGit from 'simple-git';
 
 // Discord Client 初期化
 const client = new Client({

@@ -32,7 +32,6 @@ const git = simpleGit(REPO_PATH);
 client.once('ready', async () => {
     console.log(`✅ Bot is ready! Logged in as ${client.user.tag}`);
     console.log(`📋 Monitoring channel ID: ${TARGET_CHANNEL_ID}`);
-    console.log('[DEBUG] date-fns-tz:', require('date-fns-tz'));
     console.log(`🔧 Environment check:`);
     console.log(`- DISCORD_TOKEN: ${process.env.DISCORD_TOKEN ? 'SET' : 'NOT SET'}`);
     console.log(`- GITHUB_TOKEN: ${process.env.GITHUB_TOKEN ? 'SET' : 'NOT SET'}`);
@@ -161,7 +160,7 @@ async function saveToObsidian(message) {
 // Markdownコンテンツ生成関数
 function generateMarkdownContent(message) {
     // JSTでタイムスタンプ生成
-    const jstDate = utcToZonedTime(message.createdAt, 'Asia/Tokyo');
+    const jstDate = ToZonedTime(message.createdAt, 'Asia/Tokyo');
     const timestamp = format(jstDate, 'yyyy/MM/dd HH:mm:ss');
 
     return `# Discord メモ - ${timestamp}

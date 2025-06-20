@@ -3,7 +3,8 @@ const { Client, GatewayIntentBits } = require('discord.js');
 const fs = require('fs-extra');
 const path = require('path');
 const { format } = require('date-fns');
-const { utcToZonedTime } = require('date-fns-tz');
+const dateFnsTz = require('date-fns-tz');
+const utcToZonedTime = dateFnsTz.utcToZonedTime;
 const simpleGit = require('simple-git');
 
 // Discord Client 初期化
